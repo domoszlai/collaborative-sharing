@@ -1,20 +1,34 @@
 import {
-    node, leaf, isNodeClass,
+    node, leaf, isNodeClass, getNodeProps,
     sharable, isSharable, getSharableProps, SharableProps, 
     id, isId, 
     title, isTitle,
     getClassById } from "../Annotation";
 
 class A1 {}
-@leaf()
+@leaf("b1")
 class B1 {}
-@node()
+@node("c1")
 class C1 {}
 
-test('node/leaf', () => {
+test('node/leaf obj', () => {
     expect(isNodeClass(new A1())).toBe(false);
     expect(isNodeClass(new B1())).toBe(false);
     expect(isNodeClass(new C1())).toBe(true);
+
+    expect(getNodeProps(new A1())).toBe(undefined);
+    expect(Object.assign({}, getNodeProps(new B1()))).toStrictEqual ({"id": "b1", "leaf": true});
+    expect(Object.assign({}, getNodeProps(new C1()))).toStrictEqual ({"id": "c1", "leaf": false});
+});
+
+test('node/leaf class', () => {
+    expect(isNodeClass(A1)).toBe(false);
+    expect(isNodeClass(B1)).toBe(false);
+    expect(isNodeClass(C1)).toBe(true);
+
+    expect(getNodeProps(A1)).toBe(undefined);
+    expect(Object.assign({}, getNodeProps(B1))).toStrictEqual ({"id": "b1", "leaf": true});
+    expect(Object.assign({}, getNodeProps(C1))).toStrictEqual ({"id": "c1", "leaf": false});
 });
 
 class A2 {
@@ -106,11 +120,14 @@ class A6 {
 class B6 {
 }
 
+@node()
+class A7 {}
+@leaf()
+class B7 {}
+
 test('store', () => {
-    expect(getClassById("B1")).toBe(B1);
-    expect(getClassById("C1")).toBe(C1);
+    expect(getClassById("A7")).toBe(A7);
+    expect(getClassById("B7")).toBe(B7);
     expect(getClassById("a6")).toBe(A6);
     expect(getClassById("b6")).toBe(B6);
 });
-
-

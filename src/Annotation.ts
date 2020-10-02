@@ -110,28 +110,23 @@ export function isId(obj: any, propName: string) {
     return Reflect.getMetadata(idKey, obj, propName) ?? false
 }
 
-export function isNodeClass<T extends Object>(obj: T) {
+export function getNodeProps<T extends Object>(obj: T)
+{
     if(obj !== null)
     {
-        let nodeProps = Reflect.getMetadata(nodeKey, obj.constructor) as (NodeProps<T> | undefined)
-        if(nodeProps)
-        {
-            return !nodeProps.leaf
-        }
-        else
-        {
-            return false    
-        }
+        let nodeProps = Reflect.getMetadata(nodeKey, obj.constructor) 
+        nodeProps = nodeProps ?? Reflect.getMetadata(nodeKey, obj)
+        return nodeProps as (NodeProps<T> | undefined)
     }
     else
     {
-        return false
+        return undefined
     }
 }
 
-export function getNodeProps<T extends Object>(obj: T)
-{
-    return Reflect.getMetadata(nodeKey, obj.constructor) as (NodeProps<T> | undefined)
+export function isNodeClass<T extends Object>(obj: T) {
+    let props = getNodeProps(obj) 
+    return !!props && !props.leaf
 }
 
 export function getClassById(id: string) {
