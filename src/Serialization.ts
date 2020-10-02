@@ -21,6 +21,8 @@ function deserializeLeaf(value: any) {
     if (typeof value === "object") {
         let t = getClassById(value["__type"])
 
+        // Clone object before deleting '__type' field 
+        value = Object.assign({}, value)
         delete value["__type"]
 
         if (t) {
