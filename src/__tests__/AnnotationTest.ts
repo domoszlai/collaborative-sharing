@@ -1,14 +1,14 @@
 import {
-    node, leaf, isNodeClass, getNodeProps,
-    sharable, isSharable, getSharableProps, SharableProps, 
-    id, isId, 
-    title, isTitle,
+    Node, Leaf, isNodeClass, getNodeProps,
+    Sharable, isSharable, getSharableProps, SharableProps, 
+    Id, isId, 
+    Title, isTitle,
     getClassById } from "../Annotation";
 
 class A1 {}
-@leaf("b1")
+@Leaf("b1")
 class B1 {}
-@node("c1")
+@Node("c1")
 class C1 {}
 
 test('node/leaf obj', () => {
@@ -33,19 +33,19 @@ test('node/leaf class', () => {
 
 class A2 {
     a1 = "a1"
-    @sharable() 
+    @Sharable() 
     a2 = "a2"
-    @sharable("A3")
+    @Sharable("A3")
     a3 = "a3"
-    @sharable("A4", true)
+    @Sharable("A4", true)
     a4 = "a4"
 
     getA1() {}
-    @sharable() 
+    @Sharable() 
     getA2() {}
-    @sharable("A3")
+    @Sharable("A3")
     getA3() {}
-    @sharable("A4", true)
+    @Sharable("A4", true)
     getA4() {}
 }
 
@@ -77,9 +77,9 @@ test('sharable', () => {
 
 class A3 {
     a1 = "a1"
-    @title 
+    @Title 
     a2 = "a2"
-    @title
+    @Title
     getA3(){}
 }
 
@@ -91,9 +91,9 @@ test('title', () => {
 
 class A4 {
     a1 = "a1"
-    @id 
+    @Id 
     a2 = "a2"
-    @id
+    @Id
     getA3(){}
 }
 
@@ -104,7 +104,7 @@ test('id', () => {
 });
 
 class A5 {
-    @sharable("A1")
+    @Sharable("A1")
     a1?: string
 }
 
@@ -113,16 +113,16 @@ test('missing_property', () => {
     expect(Object.assign({}, getSharableProps(new A5(), "a1"))).toStrictEqual({"forceToLeaf": false, "title": "A1"});
 });
 
-@node("a6")
+@Node("a6")
 class A6 { 
 }
-@leaf("b6")
+@Leaf("b6")
 class B6 {
 }
 
-@node()
+@Node()
 class A7 {}
-@leaf()
+@Leaf()
 class B7 {}
 
 test('store', () => {

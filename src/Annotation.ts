@@ -38,7 +38,7 @@ export class NodeProps<T> {
     readonly deserializeFn?: (o: any) => T
 }
 
-export function node<T extends Function>(id?: string) {
+export function Node<T extends Function>(id?: string) {
     return function (target: T) {
         let classId = id ?? target.name
         Reflect.defineMetadata(nodeKey, new NodeProps(classId, false), target)
@@ -47,7 +47,7 @@ export function node<T extends Function>(id?: string) {
 };
 
 // export, import
-export function leaf<T extends Function>(
+export function Leaf<T extends Function>(
         id?: string, 
         serializeFn?: (o: T) => any, 
         deserializeFn?: (o: any) => T
@@ -59,7 +59,7 @@ export function leaf<T extends Function>(
     }
 };
 
-export function sharable<T>(as?: string, forceToLeaf: boolean = false) {
+export function Sharable<T>(as?: string, forceToLeaf: boolean = false) {
     return function (
       target: T,
       propertyKey: string,
@@ -72,7 +72,7 @@ export function sharable<T>(as?: string, forceToLeaf: boolean = false) {
     };
 }
 
-export function id<T>(
+export function Id<T>(
       target: T,
       propertyKey: string,
     ) {
@@ -83,7 +83,7 @@ export function id<T>(
         propertyKey)
 };
 
-export function title<T>(
+export function Title<T>(
       target: T,
       propertyKey: string,
     ) {

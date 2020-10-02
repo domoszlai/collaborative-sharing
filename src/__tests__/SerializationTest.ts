@@ -1,18 +1,17 @@
-import {serialize, classToPlain, deserialize, Type} from "class-transformer"
+import {Type} from "class-transformer"
 
-import {sharable, getSharableProps, id, title, node, leaf} from "../Annotation";
+import {Sharable, Id, Title, Node, Leaf} from "../Annotation";
 import {makePlan} from "../Plan";
 import {deserializePlan} from "../Serialization";
 
-@node()
+@Node()
 class Settings {
 
     owner?: string
-    @sharable("Number of days")
+    @Sharable("Number of days")
     nrDays?: number
 }
 
-// default leaf
 class Ingredient {
 
     name?: string
@@ -20,15 +19,15 @@ class Ingredient {
     unit?: string
 }
 
-@leaf()
+@Leaf()
 class Recipe {
 
     // when in array and node
-    @id
+    @Id
     id?: string
     // when in array and no titlefn
     // or root object and leaf?
-    @title
+    @Title
     name?: string;
     @Type(()=>Ingredient)
     ingredients?: Ingredient[]
@@ -37,16 +36,16 @@ class Recipe {
 // what if the root object leaf?
 // title of root object is always provided?
 //@node(deserialize=)
-@node()
+@Node()
 class Workspace {
 
-    @sharable("Settings")
+    @Sharable("Settings")
     settings?: Settings
 
-    @sharable("Recipes")
+    @Sharable("Recipes")
     recipes?: Recipe[]
 
-    @sharable("Labels")
+    @Sharable("Labels")
     labels?: string[]
 
 //    @sharable("Numbers")
