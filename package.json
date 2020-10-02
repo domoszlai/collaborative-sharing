@@ -1,0 +1,40 @@
+{
+  "name": "collaborative-sharing",
+  "version": "1.0.0",
+  "description": "TypeScript library for collaborative sharing of data structures",
+  "main": "index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/domoszlai/collaborative-sharing.git"
+  },
+  "keywords": [],
+  "author": "dlacko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/domoszlai/collaborative-sharing/issues"
+  },
+  "homepage": "https://github.com/domoszlai/collaborative-sharing#readme",
+  "devDependencies": {
+    "@types/jest": "^26.0.14",
+    "jest": "^26.4.2",
+    "prettier": "^2.1.2",
+    "ts-jest": "^26.4.0",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^4.0.3"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "dependencies": {
+    "class-transformer": "^0.3.1",
+    "reflect-metadata": "^0.1.13"
+  }
+}
