@@ -1,4 +1,4 @@
-import "reflect-metadata";
+import "reflect-metadata"
 
 const classStore: Map<string, Function> = new Map()
 
@@ -45,7 +45,7 @@ export function Node<T extends Function>(classId?: string) {
         Reflect.defineMetadata(nodeKey, new NodeProps(id, false), target)
         classStore.set(id, target)
     }
-};
+}
 
 // export, import
 export function Leaf<T extends Function>(
@@ -58,7 +58,7 @@ export function Leaf<T extends Function>(
         Reflect.defineMetadata(nodeKey, new NodeProps(id, true, serializeFn, deserializeFn), target)
         classStore.set(id, target)
     }
-};
+}
 
 export function Sharable<T>(title?: string, forceToLeaf: boolean = false) {
     return function (
@@ -70,7 +70,7 @@ export function Sharable<T>(title?: string, forceToLeaf: boolean = false) {
             new SharableProps(title ?? propertyKey, forceToLeaf),
             target,
             propertyKey)
-    };
+    }
 }
 
 export function Id<T>(
@@ -82,7 +82,7 @@ export function Id<T>(
         true,
         target,
         propertyKey)
-};
+}
 
 export function Title<T>(
     target: T,
@@ -93,7 +93,7 @@ export function Title<T>(
         true,
         target,
         propertyKey)
-};
+}
 
 /** @internal */
 export function isSharable(obj: any, propName: string) {
@@ -135,5 +135,5 @@ export function isNodeClass<T extends Object>(obj: T) {
 
 /** @internal */
 export function getClassById(id: string) {
-    return classStore.get(id);
+    return classStore.get(id)
 }

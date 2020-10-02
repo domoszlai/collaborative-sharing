@@ -72,9 +72,9 @@ function deserializeSharable(obj: any) {
 }
 
 export function serializePlan(plan: Plan): Object {
-    return plan.serialize();
+    return plan.serialize()
 }
 
 export function deserializePlan(serializedPlan: Object): Plan {
-    return deserializeSharable(serializedPlan) as Plan;
+    return deserializeSharable(serializedPlan) as Plan
 }
