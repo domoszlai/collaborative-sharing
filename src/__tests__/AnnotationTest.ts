@@ -1,15 +1,16 @@
 import {
     Node, Leaf, isNodeClass, getNodeProps,
-    Sharable, isSharable, getSharableProps, SharableProps, 
-    Id, isId, 
+    Sharable, isSharable, getSharableProps, SharableProps,
+    Id, isId,
     Title, isTitle,
-    getClassById } from "../Annotation";
+    getClassById
+} from "../Annotation";
 
-class A1 {}
+class A1 { }
 @Leaf("b1")
-class B1 {}
+class B1 { }
 @Node("c1")
-class C1 {}
+class C1 { }
 
 test('node/leaf obj', () => {
     expect(isNodeClass(new A1())).toBe(false);
@@ -17,8 +18,8 @@ test('node/leaf obj', () => {
     expect(isNodeClass(new C1())).toBe(true);
 
     expect(getNodeProps(new A1())).toBe(undefined);
-    expect(Object.assign({}, getNodeProps(new B1()))).toStrictEqual ({"id": "b1", "leaf": true});
-    expect(Object.assign({}, getNodeProps(new C1()))).toStrictEqual ({"id": "c1", "leaf": false});
+    expect(Object.assign({}, getNodeProps(new B1()))).toStrictEqual({ "id": "b1", "leaf": true });
+    expect(Object.assign({}, getNodeProps(new C1()))).toStrictEqual({ "id": "c1", "leaf": false });
 });
 
 test('node/leaf class', () => {
@@ -27,26 +28,26 @@ test('node/leaf class', () => {
     expect(isNodeClass(C1)).toBe(true);
 
     expect(getNodeProps(A1)).toBe(undefined);
-    expect(Object.assign({}, getNodeProps(B1))).toStrictEqual ({"id": "b1", "leaf": true});
-    expect(Object.assign({}, getNodeProps(C1))).toStrictEqual ({"id": "c1", "leaf": false});
+    expect(Object.assign({}, getNodeProps(B1))).toStrictEqual({ "id": "b1", "leaf": true });
+    expect(Object.assign({}, getNodeProps(C1))).toStrictEqual({ "id": "c1", "leaf": false });
 });
 
 class A2 {
     a1 = "a1"
-    @Sharable() 
+    @Sharable()
     a2 = "a2"
     @Sharable("A3")
     a3 = "a3"
     @Sharable("A4", true)
     a4 = "a4"
 
-    getA1() {}
-    @Sharable() 
-    getA2() {}
+    getA1() { }
+    @Sharable()
+    getA2() { }
     @Sharable("A3")
-    getA3() {}
+    getA3() { }
     @Sharable("A4", true)
-    getA4() {}
+    getA4() { }
 }
 
 test('sharable', () => {
@@ -77,10 +78,10 @@ test('sharable', () => {
 
 class A3 {
     a1 = "a1"
-    @Title 
+    @Title
     a2 = "a2"
     @Title
-    getA3(){}
+    getA3() { }
 }
 
 test('title', () => {
@@ -91,10 +92,10 @@ test('title', () => {
 
 class A4 {
     a1 = "a1"
-    @Id 
+    @Id
     a2 = "a2"
     @Id
-    getA3(){}
+    getA3() { }
 }
 
 test('id', () => {
@@ -110,20 +111,20 @@ class A5 {
 
 test('missing_property', () => {
     expect(Object.assign({}, new A5())).toStrictEqual({});
-    expect(Object.assign({}, getSharableProps(new A5(), "a1"))).toStrictEqual({"forceToLeaf": false, "title": "A1"});
+    expect(Object.assign({}, getSharableProps(new A5(), "a1"))).toStrictEqual({ "forceToLeaf": false, "title": "A1" });
 });
 
 @Node("a6")
-class A6 { 
+class A6 {
 }
 @Leaf("b6")
 class B6 {
 }
 
 @Node()
-class A7 {}
+class A7 { }
 @Leaf()
-class B7 {}
+class B7 { }
 
 test('store', () => {
     expect(getClassById("A7")).toBe(A7);

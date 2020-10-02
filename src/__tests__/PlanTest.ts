@@ -1,7 +1,7 @@
-import {serialize, classToPlain} from "class-transformer"
+import { serialize, classToPlain } from "class-transformer"
 
-import {Sharable, getSharableProps, Id, Title, Node, Leaf} from "../Annotation";
-import {createPlan} from "../Plan";
+import { Sharable, getSharableProps, Id, Title, Node, Leaf } from "../Annotation";
+import { createPlan } from "../Plan";
 
 @Node()
 class Settings {
@@ -48,7 +48,7 @@ class Workspace {
     @Sharable("Labels")
     labels?: string[]
 
-//    @sharable("Numbers")
+    //    @sharable("Numbers")
     numbers?: number[]
 }
 
@@ -60,21 +60,21 @@ class Workspace {
 // @sharable && array => elements: title -> title, 
 
 const r1 = new Recipe()
-r1.id="id1"
-r1.name="bu1"
-r1.ingredients=[new Ingredient()]
+r1.id = "id1"
+r1.name = "bu1"
+r1.ingredients = [new Ingredient()]
 
 const r2 = new Recipe()
-r2.id="id2"
-r2.name="bu2"
-r2.ingredients=[new Ingredient()]
+r2.id = "id2"
+r2.name = "bu2"
+r2.ingredients = [new Ingredient()]
 
 const ws = new Workspace()
 ws.settings = new Settings()
-ws.settings.nrDays=3
-ws.recipes = [r1,r2]
+ws.settings.nrDays = 3
+ws.recipes = [r1, r2]
 //ws.labels = ["A","B"]
-ws.numbers = [1 ,2 ]
+ws.numbers = [1, 2]
 
 const t = new Map()
 t.set("a", 1)

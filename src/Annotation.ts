@@ -10,8 +10,7 @@ const nodeKey = Symbol("sharable_node")
 /** @internal */
 export class SharableProps {
 
-    constructor(title: string, forceToLeaf: boolean)
-    {
+    constructor(title: string, forceToLeaf: boolean) {
         this.title = title
         this.forceToLeaf = forceToLeaf
     }
@@ -25,12 +24,11 @@ export class NodeProps<T> {
 
     /** @internal */
     constructor(
-        id: string, 
-        leaf: boolean, 
+        id: string,
+        leaf: boolean,
         serializeFn?: (o: T) => any,
         deserializeFn?: (o: any) => T
-        )
-    {
+    ) {
         this.id = id
         this.leaf = leaf
     }
@@ -51,10 +49,10 @@ export function Node<T extends Function>(classId?: string) {
 
 // export, import
 export function Leaf<T extends Function>(
-        classId?: string, 
-        serializeFn?: (o: T) => any, 
-        deserializeFn?: (o: any) => T
-    ){
+    classId?: string,
+    serializeFn?: (o: T) => any,
+    deserializeFn?: (o: any) => T
+) {
     return function (target: T) {
         let id = classId ?? target.name
         Reflect.defineMetadata(nodeKey, new NodeProps(id, true, serializeFn, deserializeFn), target)
@@ -64,37 +62,37 @@ export function Leaf<T extends Function>(
 
 export function Sharable<T>(title?: string, forceToLeaf: boolean = false) {
     return function (
-      target: T,
-      propertyKey: string,
+        target: T,
+        propertyKey: string,
     ) {
         Reflect.defineMetadata(
-            sharableKey, 
-            new SharableProps(title ?? propertyKey, forceToLeaf), 
-            target, 
+            sharableKey,
+            new SharableProps(title ?? propertyKey, forceToLeaf),
+            target,
             propertyKey)
     };
 }
 
 export function Id<T>(
-      target: T,
-      propertyKey: string,
-    ) {
+    target: T,
+    propertyKey: string,
+) {
     Reflect.defineMetadata(
-        idKey, 
-        true, 
-        target, 
+        idKey,
+        true,
+        target,
         propertyKey)
 };
 
 export function Title<T>(
-      target: T,
-      propertyKey: string,
-    ) {
-        Reflect.defineMetadata(
-            titleKey, 
-            true, 
-            target, 
-            propertyKey)
+    target: T,
+    propertyKey: string,
+) {
+    Reflect.defineMetadata(
+        titleKey,
+        true,
+        target,
+        propertyKey)
 };
 
 /** @internal */
@@ -118,23 +116,20 @@ export function isId(obj: any, propName: string) {
 }
 
 /** @internal */
-export function getNodeProps<T extends Object>(obj: T)
-{
-    if(obj !== null && (typeof obj === "object" || typeof obj === "function"))
-    {
-        let nodeProps = Reflect.getMetadata(nodeKey, obj.constructor) 
+export function getNodeProps<T extends Object>(obj: T) {
+    if (obj !== null && (typeof obj === "object" || typeof obj === "function")) {
+        let nodeProps = Reflect.getMetadata(nodeKey, obj.constructor)
         nodeProps = nodeProps ?? Reflect.getMetadata(nodeKey, obj)
         return nodeProps as (NodeProps<T> | undefined)
     }
-    else
-    {
+    else {
         return undefined
     }
 }
 
 /** @internal */
 export function isNodeClass<T extends Object>(obj: T) {
-    let props = getNodeProps(obj) 
+    let props = getNodeProps(obj)
     return !!props && !props.leaf
 }
 
