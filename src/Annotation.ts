@@ -7,6 +7,7 @@ const titleKey = Symbol("sharable_id")
 const idKey = Symbol("sharable_title")
 const nodeKey = Symbol("sharable_node")
 
+/** @internal */
 export class SharableProps {
 
     constructor(title: string, forceToLeaf: boolean)
@@ -19,8 +20,10 @@ export class SharableProps {
     readonly forceToLeaf: boolean
 }
 
+/** @internal */
 export class NodeProps<T> {
 
+    /** @internal */
     constructor(
         id: string, 
         leaf: boolean, 
@@ -38,35 +41,35 @@ export class NodeProps<T> {
     readonly deserializeFn?: (o: any) => T
 }
 
-export function Node<T extends Function>(id?: string) {
+export function Node<T extends Function>(classId?: string) {
     return function (target: T) {
-        let classId = id ?? target.name
-        Reflect.defineMetadata(nodeKey, new NodeProps(classId, false), target)
-        classStore.set(classId, target)
+        let id = classId ?? target.name
+        Reflect.defineMetadata(nodeKey, new NodeProps(id, false), target)
+        classStore.set(id, target)
     }
 };
 
 // export, import
 export function Leaf<T extends Function>(
-        id?: string, 
+        classId?: string, 
         serializeFn?: (o: T) => any, 
         deserializeFn?: (o: any) => T
     ){
     return function (target: T) {
-        let classId = id ?? target.name
-        Reflect.defineMetadata(nodeKey, new NodeProps(id ?? target.name, true, serializeFn, deserializeFn), target)
-        classStore.set(classId, target)
+        let id = classId ?? target.name
+        Reflect.defineMetadata(nodeKey, new NodeProps(id, true, serializeFn, deserializeFn), target)
+        classStore.set(id, target)
     }
 };
 
-export function Sharable<T>(as?: string, forceToLeaf: boolean = false) {
+export function Sharable<T>(title?: string, forceToLeaf: boolean = false) {
     return function (
       target: T,
       propertyKey: string,
     ) {
         Reflect.defineMetadata(
             sharableKey, 
-            new SharableProps(as ?? propertyKey, forceToLeaf), 
+            new SharableProps(title ?? propertyKey, forceToLeaf), 
             target, 
             propertyKey)
     };
@@ -94,22 +97,27 @@ export function Title<T>(
             propertyKey)
 };
 
+/** @internal */
 export function isSharable(obj: any, propName: string) {
     return !!Reflect.getMetadata(sharableKey, obj, propName)
 }
 
+/** @internal */
 export function getSharableProps(obj: any, propName: string) {
     return Reflect.getMetadata(sharableKey, obj, propName) as SharableProps
 }
 
+/** @internal */
 export function isTitle(obj: any, propName: string) {
     return Reflect.getMetadata(titleKey, obj, propName) ?? false
 }
 
+/** @internal */
 export function isId(obj: any, propName: string) {
     return Reflect.getMetadata(idKey, obj, propName) ?? false
 }
 
+/** @internal */
 export function getNodeProps<T extends Object>(obj: T)
 {
     if(obj !== null && (typeof obj === "object" || typeof obj === "function"))
@@ -124,11 +132,13 @@ export function getNodeProps<T extends Object>(obj: T)
     }
 }
 
+/** @internal */
 export function isNodeClass<T extends Object>(obj: T) {
     let props = getNodeProps(obj) 
     return !!props && !props.leaf
 }
 
+/** @internal */
 export function getClassById(id: string) {
     return classStore.get(id);
 }

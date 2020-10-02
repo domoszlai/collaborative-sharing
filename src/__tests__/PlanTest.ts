@@ -1,7 +1,7 @@
 import {serialize, classToPlain} from "class-transformer"
 
 import {Sharable, getSharableProps, Id, Title, Node, Leaf} from "../Annotation";
-import {makePlan} from "../Plan";
+import {createPlan} from "../Plan";
 
 @Node()
 class Settings {

@@ -1,10 +1,10 @@
 import {classToPlain, plainToClass} from "class-transformer"
-import "class-transformer"
+import {ClassType} from "class-transformer/ClassTransformer"
 
 import {getNodeProps, getClassById} from './Annotation'
-import {SharableScalar, SharableObject, SharableArray} from './Plan'
-import { ClassType } from "class-transformer/ClassTransformer"
+import {Plan, SharableScalar, SharableObject, SharableArray} from './Plan'
 
+/** @internal */
 export function serializeLeaf(value: any)
 {
     let nodeProps = getNodeProps(value)
@@ -19,7 +19,7 @@ export function serializeLeaf(value: any)
     return ret
 }
 
-export function deserializeLeaf(value: any)
+function deserializeLeaf(value: any)
 {
     if(typeof value === "object")
     {
@@ -81,7 +81,12 @@ function deserializeSharable(obj: any)
     throw ("Unrecognized sharable node: " + JSON.stringify(obj))
 }
 
-export function deserializePlan(serializedPlan: Object)
+export function serializePlan(plan: Plan): Object
 {
-    return deserializeSharable(serializedPlan);
+    return plan.serialize();
+}
+
+export function deserializePlan(serializedPlan: Object): Plan
+{
+    return deserializeSharable(serializedPlan) as Plan;
 }

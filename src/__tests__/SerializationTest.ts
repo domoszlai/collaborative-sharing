@@ -1,7 +1,7 @@
 import {Type} from "class-transformer"
 
 import {Sharable, Id, Title, Node, Leaf} from "../Annotation";
-import {makePlan} from "../Plan";
+import {createPlan} from "../Plan";
 import {deserializePlan} from "../Serialization";
 
 @Node()
@@ -85,7 +85,7 @@ test('property', () => {
 });
 */
 
-const plan = makePlan(ws, "A")
+const plan = createPlan(ws, "A")
 
 test('property', () => {
     //expect(plan).toBe(deserializePlan(plan.serialize()));

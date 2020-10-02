@@ -11,6 +11,7 @@ enum SharableEnabled
 
 export abstract class SharableNode 
 {
+    /** @internal */
     constructor(title: string)
     {
         this.title = title;
@@ -34,13 +35,16 @@ export abstract class SharableNode
         return undefined
     }
 
+    /** @internal */
     abstract serialize(): any;
 
+    /** @internal */
     private title: string
 }
 
 export class SharableScalar extends SharableNode 
 {
+    /** @internal */
     constructor(title: string, value: any)
     {
         super(title)
@@ -55,17 +59,20 @@ export class SharableScalar extends SharableNode
         return true;
     }
 
+    /** @internal */
     serialize() {
         return {"__type": "__SharableScalar", 
                 "title": this.getTitle(), 
                 "value": serializeLeaf(this.value)}
     }
 
+    /** @internal */
     private value: any
 }
 
 export class SharableObject extends SharableNode 
 {
+    /** @internal */
     constructor(title: string)
     {
         super(title)
@@ -77,11 +84,13 @@ export class SharableObject extends SharableNode
         return Array.from(this.sharables.values())
     }
 
+    /** @internal */
     addSharable(propertykey: string, sharable: SharableNode)
     {
         this.sharables.set(propertykey, sharable)
     }
 
+    /** @internal */
     addId(propertykey: string, val: any)
     {
         this.ids.set(propertykey, val)
@@ -91,6 +100,7 @@ export class SharableObject extends SharableNode
         return false;
     }
 
+    /** @internal */
     serialize() {
         const ids = Array.from(this.ids.entries()).reduce(
             (acc, [key, value]) => ({ ...acc, [key]: serializeLeaf(value)}), {}
@@ -106,12 +116,15 @@ export class SharableObject extends SharableNode
                 "sharables": sharables}
     }
 
+    /** @internal */
     private ids: Map<string,any>
+    /** @internal */
     private sharables: Map<string,SharableNode>
 }
 
 export class SharableArray extends SharableNode 
 {
+    /** @internal */
     constructor(title: string)
     {
         super(title)
@@ -122,6 +135,7 @@ export class SharableArray extends SharableNode
         return this.sharables
     }
 
+    /** @internal */
     addSharable(sharable: SharableNode)
     {
         this.sharables.push(sharable)
@@ -131,6 +145,7 @@ export class SharableArray extends SharableNode
         return false;
     }
 
+    /** @internal */
     serialize() {
         const sharables = this.sharables.map( s => s.serialize());
 
@@ -139,6 +154,7 @@ export class SharableArray extends SharableNode
                 "sharables": sharables}
     }
 
+    /** @internal */
     private sharables: SharableNode[]
 }
 
@@ -252,7 +268,9 @@ function addSharablesProperties(node: SharableObject, obj: any)
     }   
 }
 
-export function makePlan(obj: any, rootTitle: string)
+export type Plan = SharableObject
+
+export function createPlan(obj: Object, rootTitle: string): Plan
 {
     let node = new SharableObject(rootTitle)
     addSharablesProperties(node, obj)
