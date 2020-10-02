@@ -1,7 +1,8 @@
-import {serialize, classToPlain} from "class-transformer"
+import {serialize, classToPlain, deserialize, Type} from "class-transformer"
 
 import {sharable, getSharableProps, id, title, node, leaf} from "../Annotation";
 import {makePlan} from "../Plan";
+import {deserializePlan} from "../Serialization";
 
 @node()
 class Settings {
@@ -29,7 +30,7 @@ class Recipe {
     // or root object and leaf?
     @title
     name?: string;
-    //@exclude
+    @Type(()=>Ingredient)
     ingredients?: Ingredient[]
 }
 
@@ -85,6 +86,9 @@ test('property', () => {
 });
 */
 
+const plan = makePlan(ws, "A")
+
 test('property', () => {
-    expect(1).toBe(1);
+    //expect(plan).toBe(deserializePlan(plan.serialize()));
+    expect(plan).toStrictEqual(deserializePlan(plan.serialize()));
 });

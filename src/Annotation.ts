@@ -112,7 +112,7 @@ export function isId(obj: any, propName: string) {
 
 export function getNodeProps<T extends Object>(obj: T)
 {
-    if(obj !== null)
+    if(obj !== null && (typeof obj === "object" || typeof obj === "function"))
     {
         let nodeProps = Reflect.getMetadata(nodeKey, obj.constructor) 
         nodeProps = nodeProps ?? Reflect.getMetadata(nodeKey, obj)
