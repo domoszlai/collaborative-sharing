@@ -1,7 +1,7 @@
 import {serialize, classToPlain} from "class-transformer"
 
 import {sharable, getSharableProps, id, title, node, leaf} from "../Annotation";
-import {makePlan} from "../Plan2";
+import {makePlan} from "../Plan";
 
 @node()
 class Settings {
@@ -19,7 +19,6 @@ class Ingredient {
     unit?: string
 }
 
-//@leaf(serialize=, deserialize=)
 @leaf()
 class Recipe {
 
