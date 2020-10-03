@@ -139,8 +139,7 @@ export function getNodeProps<T extends Object>(obj: T) {
 }
 
 /** @internal */
-export function isNodeClass<T extends Object>(obj: T) {
-    let props = getNodeProps(obj)
+export function isNodeClass<T extends Object>(props: NodeProps<T> | undefined) {
     return !!props && !props.leaf
 }
 

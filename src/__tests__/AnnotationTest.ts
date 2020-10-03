@@ -13,9 +13,9 @@ class B1 { }
 class C1 { }
 
 test('node/leaf obj', () => {
-    expect(isNodeClass(new A1())).toBe(false);
-    expect(isNodeClass(new B1())).toBe(false);
-    expect(isNodeClass(new C1())).toBe(true);
+    expect(isNodeClass(getNodeProps(new A1()))).toBe(false);
+    expect(isNodeClass(getNodeProps(new B1()))).toBe(false);
+    expect(isNodeClass(getNodeProps(new C1()))).toBe(true);
 
     expect(getNodeProps(new A1())).toBe(undefined);
     expect(Object.assign({}, getNodeProps(new B1()))).toStrictEqual({ "id": "b1", "leaf": true });
@@ -23,9 +23,9 @@ test('node/leaf obj', () => {
 });
 
 test('node/leaf class', () => {
-    expect(isNodeClass(A1)).toBe(false);
-    expect(isNodeClass(B1)).toBe(false);
-    expect(isNodeClass(C1)).toBe(true);
+    expect(isNodeClass(getNodeProps(A1))).toBe(false);
+    expect(isNodeClass(getNodeProps(B1))).toBe(false);
+    expect(isNodeClass(getNodeProps(C1))).toBe(true);
 
     expect(getNodeProps(A1)).toBe(undefined);
     expect(Object.assign({}, getNodeProps(B1))).toStrictEqual({ "id": "b1", "leaf": true });

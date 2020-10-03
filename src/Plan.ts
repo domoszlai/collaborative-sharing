@@ -1,5 +1,5 @@
 import { isSharable, getSharableProps, isLabel, isId } from './Annotation'
-import { isNodeClass } from './Annotation'
+import { isNodeClass, getNodeProps } from './Annotation'
 import { serializeLeaf } from './Serialization'
 
 enum SharableEnabled {
@@ -32,7 +32,7 @@ export abstract class SharableNode {
     }
 
     /** @internal */
-    abstract serialize(): any
+    abstract export(): any
 
     /** @internal */
     private label: string
@@ -63,12 +63,8 @@ export class SharableScalar extends SharableNode {
     }
 
     /** @internal */
-    serialize() {
-        return {
-            "__type": "__SharableScalar",
-            "label": this.getLabel(),
-            "value": serializeLeaf(this.value)
-        }
+    export() {
+        return serializeLeaf(this.value)
     }
 
     /** @internal */
@@ -79,10 +75,11 @@ export class SharableScalar extends SharableNode {
 
 export class SharableObject extends SharableNode {
     /** @internal */
-    constructor(label: string) {
+    constructor(label: string, classId: string) {
         super(label)
         this.sharables = new Map()
         this.ids = new Map()
+        this.classId = classId
     }
 
     getSharables() {
@@ -112,27 +109,26 @@ export class SharableObject extends SharableNode {
     }
 
     /** @internal */
-    serialize() {
-        const ids = Array.from(this.ids.entries()).reduce(
-            (acc, [key, value]) => ({ ...acc, [key]: serializeLeaf(value) }), {}
+    export() {
+        let ret = { "__type": this.classId }
+
+        ret = Array.from(this.ids.entries()).reduce(
+            (acc, [key, value]) => ({ ...acc, [key]: serializeLeaf(value) }), ret
         )
 
-        const sharables = Array.from(this.sharables.entries()).reduce(
-            (acc, [key, value]) => ({ ...acc, [key]: value.serialize() }), {}
+        ret = Array.from(this.sharables.entries()).reduce(
+            (acc, [key, value]) => ({ ...acc, [key]: value.export() }), ret
         )
 
-        return {
-            "__type": "__SharableObject",
-            "label": this.getLabel(),
-            "ids": ids,
-            "sharables": sharables
-        }
+        return ret;
     }
 
     /** @internal */
     private ids: Map<string, any>
     /** @internal */
     private sharables: Map<string, SharableNode>
+    /** @internal */
+    private classId: string
 }
 
 export class SharableArray extends SharableNode {
@@ -164,14 +160,8 @@ export class SharableArray extends SharableNode {
     }
 
     /** @internal */
-    serialize() {
-        const sharables = this.sharables.map(s => s.serialize())
-
-        return {
-            "__type": "__SharableArray",
-            "label": this.getLabel(),
-            "sharables": sharables
-        }
+    export() {
+        return this.sharables.map(s => s.export())
     }
 
     /** @internal */
@@ -218,9 +208,10 @@ function addIds(node: SharableObject, obj: any) {
 function addSharableElements(node: SharableArray, arr: any[]) {
     for (var e of arr) {
         if (e !== null) {
-            if (isNodeClass(e)) {
+            let nodeProps = getNodeProps(e)
+            if (isNodeClass(nodeProps)) {
                 let label = getLabel(e)
-                let subNode = new SharableObject(label)
+                let subNode = new SharableObject(label, nodeProps!.id)
                 addIds(subNode, e)
                 addSharablesProperties(subNode, e)
                 node.addSharable(subNode)
@@ -245,30 +236,42 @@ function addSharableElements(node: SharableArray, arr: any[]) {
 function addSharablesProperties(node: SharableObject, obj: any) {
     for (var m in obj) {
         if (isSharable(obj, m)) {
-            let props = getSharableProps(obj, m)
+            let sharableProps = getSharableProps(obj, m)
             let val = getValue(obj, m)
+            let nodeProps = getNodeProps(val)
 
-            if (isNodeClass(val) && !props.forceToLeaf) {
-                let subNode = new SharableObject(props.label)
+            if (isNodeClass(nodeProps) && !sharableProps.forceToLeaf) {
+                let subNode = new SharableObject(sharableProps.label, nodeProps!.id)
                 addSharablesProperties(subNode, val)
                 node.addSharable(m, subNode)
             }
-            else if (Array.isArray(val) && !props.forceToLeaf) {
-                let subNode = new SharableArray(props.label)
+            else if (Array.isArray(val) && !sharableProps.forceToLeaf) {
+                let subNode = new SharableArray(sharableProps.label)
                 addSharableElements(subNode, val)
                 node.addSharable(m, subNode)
             }
             else {
-                node.addSharable(m, new SharableScalar(props.label, val))
+                node.addSharable(m, new SharableScalar(sharableProps.label, val))
             }
         }
     }
 }
 
-export type Plan = SharableObject
+export type Plan = SharableNode
 
-export function createPlan(obj: Object, rootLabel: string): Plan {
-    let node = new SharableObject(rootLabel)
-    addSharablesProperties(node, obj)
-    return node
+export function createPlan(obj: any, rootLabel: string): Plan {
+    let nodeProps = getNodeProps(obj)
+    if (isNodeClass(nodeProps)) {
+        let node = new SharableObject(rootLabel, nodeProps!.id)
+        addSharablesProperties(node, obj)
+        return node
+    }
+    else if (Array.isArray(obj)) {
+        let node = new SharableArray(rootLabel)
+        addSharableElements(node, obj)
+        return node
+    }
+    else {
+        return new SharableScalar(rootLabel, obj)
+    }
 }

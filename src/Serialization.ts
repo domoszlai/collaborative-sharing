@@ -50,7 +50,7 @@ function deserializeSharable(obj: any) {
     let isObj = typeof obj === "object"
 
     if (isObj && obj["__type"] === "__SharableObject") {
-        let s = new SharableObject(obj.label)
+        let s = new SharableObject(obj.label, "id")
         Object.entries(obj.ids).forEach(
             id => s.addId(id[0], deserializeLeaf(id[1])))
         Object.entries(obj.sharables).forEach(
@@ -71,8 +71,8 @@ function deserializeSharable(obj: any) {
     throw ("Unrecognized sharable node")
 }
 
-export function serializePlan(plan: Plan): Object {
-    return plan.serialize()
+export function exportPlan(plan: Plan): Object {
+    return plan.export()
 }
 
 export function deserializePlan(serializedPlan: Object): Plan {
