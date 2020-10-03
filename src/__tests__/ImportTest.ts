@@ -2,7 +2,7 @@ import { Type } from "class-transformer"
 
 import { Sharable, Id, Label, Node, Leaf } from "../Annotation";
 import { createPlan } from "../Plan";
-import { deserializePlan } from "../Serialization";
+import { deserializePlan } from "../Import";
 
 @Node()
 class Settings {

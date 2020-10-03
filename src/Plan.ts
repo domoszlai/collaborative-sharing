@@ -1,11 +1,24 @@
+import { classToPlain } from "class-transformer"
+
 import { isSharable, getSharableProps, isLabel, isId } from './Annotation'
 import { isNodeClass, getNodeProps } from './Annotation'
-import { serializeLeaf } from './Serialization'
 
 enum SharableEnabled {
     Enabled,
     Disabled,
     PartiallyEnabled
+}
+
+function serializeLeaf(value: any) {
+    let nodeProps = getNodeProps(value)
+    let serializeFn = nodeProps?.serializeFn ?? classToPlain
+    let ret = serializeFn(value)
+
+    if (typeof ret === "object" && nodeProps) {
+        ret["__type"] = nodeProps.id
+    }
+
+    return ret
 }
 
 export abstract class SharableNode {
@@ -194,15 +207,11 @@ function getLabel(obj: any) {
 }
 
 function addIds(node: SharableObject, obj: any) {
-    let ret: [string, any][] = []
-
     for (var m in obj) {
         if (isId(obj, m)) {
-            ret.push([m, getValue(obj, m)])
+            node.addId(m, getValue(obj, m))
         }
     }
-
-    return ret
 }
 
 function addSharableElements(node: SharableArray, arr: any[]) {

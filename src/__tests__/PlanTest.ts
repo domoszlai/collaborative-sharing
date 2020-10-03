@@ -1,90 +1,101 @@
-import { serialize, classToPlain } from "class-transformer"
+import { classToPlain } from "class-transformer"
 
-import { Sharable, getSharableProps, Id, Label, Node, Leaf } from "../Annotation";
+import { Sharable, Id, Label, Node, Leaf } from "../Annotation";
 import { createPlan } from "../Plan";
 
-@Node()
-class Settings {
+@Leaf("cid")
+class C {
+    public constructor(init?: Partial<C>) {
+        Object.assign(this, init);
+    }
 
-    owner?: string
-    @Sharable("Number of days")
-    nrDays?: number
+    ca?: string
 }
 
-// default leaf
-class Ingredient {
+@Node("bid")
+class B {
 
-    name?: string
-    amount?: number
-    unit?: string
-}
+    public constructor(init?: Partial<B>) {
+        Object.assign(this, init);
+    }
 
-@Leaf()
-class Recipe {
-
-    // when in array and node
-    @Id
-    id?: string
-    // when in array and no titlefn
-    // or root object and leaf?
     @Label
-    name?: string;
-    //@exclude
-    ingredients?: Ingredient[]
+    ba?: string
+    @Id
+    bb?: number
+    @Sharable("Bc")
+    bc?: C
 }
 
-// what if the root object leaf?
-// title of root object is always provided?
-//@node(deserialize=)
-@Node()
-class Workspace {
+@Node("aid")
+class A {
 
-    @Sharable("Settings")
-    settings?: Settings
+    public constructor(init?: Partial<A>) {
+        Object.assign(this, init);
+    }
 
-    @Sharable("Recipes")
-    recipes?: Recipe[]
-
-    @Sharable("Labels")
-    labels?: string[]
-
-    //    @sharable("Numbers")
-    numbers?: number[]
+    @Sharable("Ac")
+    ac?: B[]
 }
 
+const a = new A(
+    {
+        ac: [
+            new B({
+                ba: "bu",
+                bb: 2,
+                bc: new C({ ca: "bubu" })
+            }),
+            new B({
+                ba: "mu",
+                bb: 1,
+                bc: new C({ ca: "mumu" })
+            })
+        ]
+    })
 
-// ?? shareChildren, whole, treatObjectAsValue
+test('plan:object+array+leaf/label/id', () => {
+    expect(classToPlain(createPlan(a, "label"))).toStrictEqual(
+        {
+            "classId": "aid",
+            "ids": {},
+            "label": "label",
+            "sharables": {
+                "ac": {
+                    "label": "Ac",
+                    "sharables": [
+                        {
+                            "classId": "bid",
+                            "ids": { "bb": 2 },
+                            "label": "bu",
+                            "sharables": {
+                                "bc": {
+                                    "enabled": false,
+                                    "label": "Bc",
+                                    "value": {
+                                        "ca": "bubu",
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            "classId": "bid",
+                            "ids": { "bb": 1 },
+                            "label": "mu",
+                            "sharables": {
+                                "bc": {
+                                    "enabled": false,
+                                    "label": "Bc",
+                                    "value": {
+                                        "ca": "mumu",
+                                    },
+                                },
+                            },
+                        },
+                    ],
+                },
+            },
+        }
 
-// @sharable && value => value -> value, propertyName -> title
-// @sharable && object => sharable props -> sharable
-// @sharable && array => elements: title -> title, 
-
-const r1 = new Recipe()
-r1.id = "id1"
-r1.name = "bu1"
-r1.ingredients = [new Ingredient()]
-
-const r2 = new Recipe()
-r2.id = "id2"
-r2.name = "bu2"
-r2.ingredients = [new Ingredient()]
-
-const ws = new Workspace()
-ws.settings = new Settings()
-ws.settings.nrDays = 3
-ws.recipes = [r1, r2]
-//ws.labels = ["A","B"]
-ws.numbers = [1, 2]
-
-const t = new Map()
-t.set("a", 1)
-
-/*
-test('property', () => {
-    expect(makePlan(ws, "WS").serialize()).toBe("");
-});
-*/
-
-test('property', () => {
-    expect(1).toBe(1);
-});
+    )
+})

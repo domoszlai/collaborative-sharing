@@ -1,21 +1,8 @@
-import { classToPlain, plainToClass } from "class-transformer"
+import { plainToClass } from "class-transformer"
 import { ClassType } from "class-transformer/ClassTransformer"
 
 import { getNodeProps, getClassById } from './Annotation'
 import { Plan, SharableScalar, SharableObject, SharableArray } from './Plan'
-
-/** @internal */
-export function serializeLeaf(value: any) {
-    let nodeProps = getNodeProps(value)
-    let serializeFn = nodeProps?.serializeFn ?? classToPlain
-    let ret = serializeFn(value)
-
-    if (typeof ret === "object" && nodeProps) {
-        ret["__type"] = nodeProps.id
-    }
-
-    return ret
-}
 
 function deserializeLeaf(value: any) {
     if (typeof value === "object") {
@@ -46,7 +33,7 @@ function deserializeLeaf(value: any) {
     return value
 }
 
-function deserializeSharable(obj: any) {
+function importSharable(obj: any) {
     let isObj = typeof obj === "object"
 
     if (isObj && obj["__type"] === "__SharableObject") {
@@ -54,13 +41,13 @@ function deserializeSharable(obj: any) {
         Object.entries(obj.ids).forEach(
             id => s.addId(id[0], deserializeLeaf(id[1])))
         Object.entries(obj.sharables).forEach(
-            sharable => s.addSharable(sharable[0], deserializeSharable(sharable[1])))
+            sharable => s.addSharable(sharable[0], importSharable(sharable[1])))
         return s
     }
     else if (isObj && obj["__type"] === "__SharableArray") {
         let s = new SharableArray(obj.label)
         Array.from(obj.sharables).forEach(
-            sharable => s.addSharable(deserializeSharable(sharable)))
+            sharable => s.addSharable(importSharable(sharable)))
         return s
     }
     else if (isObj && obj["__type"] === "__SharableScalar") {
@@ -75,6 +62,6 @@ export function exportPlan(plan: Plan): Object {
     return plan.export()
 }
 
-export function deserializePlan(serializedPlan: Object): Plan {
-    return deserializeSharable(serializedPlan) as Plan
+export function importPlan(serializedPlan: Object): Plan {
+    return importSharable(serializedPlan) as Plan
 }
