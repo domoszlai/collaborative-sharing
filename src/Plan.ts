@@ -18,8 +18,8 @@ export abstract class SharableNode {
         return this.title
     }
 
-    //abstract setEnabled(enabled: boolean): void
-    //abstract getEnabled(): SharableEnabled
+    abstract setEnabled(enabled: boolean): void
+    abstract getEnabled(): SharableEnabled
 
     abstract isLeaf(): boolean
 
@@ -43,6 +43,7 @@ export class SharableScalar extends SharableNode {
     constructor(title: string, value: any) {
         super(title)
         this.value = value
+        this.enabled = false
     }
 
     getValue() {
@@ -51,6 +52,14 @@ export class SharableScalar extends SharableNode {
 
     isLeaf() {
         return true
+    }
+
+    setEnabled(enabled: boolean) {
+        this.enabled = enabled
+    }
+
+    getEnabled() {
+        return this.enabled ? SharableEnabled.Enabled : SharableEnabled.Disabled
     }
 
     /** @internal */
@@ -64,6 +73,8 @@ export class SharableScalar extends SharableNode {
 
     /** @internal */
     private value: any
+    /** @internal */
+    private enabled: boolean
 }
 
 export class SharableObject extends SharableNode {
@@ -90,6 +101,14 @@ export class SharableObject extends SharableNode {
 
     isLeaf() {
         return false
+    }
+
+    setEnabled(enabled: boolean) {
+        this.sharables.forEach(s => s.setEnabled(enabled))
+    }
+
+    getEnabled() {
+        return SharableEnabled.PartiallyEnabled;
     }
 
     /** @internal */
@@ -134,6 +153,14 @@ export class SharableArray extends SharableNode {
 
     isLeaf() {
         return false
+    }
+
+    setEnabled(enabled: boolean) {
+        this.sharables.forEach(s => s.setEnabled(enabled))
+    }
+
+    getEnabled() {
+        return SharableEnabled.PartiallyEnabled;
     }
 
     /** @internal */

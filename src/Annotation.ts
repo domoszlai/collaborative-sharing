@@ -9,7 +9,6 @@ const nodeKey = Symbol("sharable_node")
 
 /** @internal */
 export class SharableProps {
-
     constructor(title: string, forceToLeaf: boolean) {
         this.title = title
         this.forceToLeaf = forceToLeaf
@@ -117,10 +116,11 @@ export function isId(obj: any, propName: string) {
 
 /** @internal */
 export function getNodeProps<T extends Object>(obj: T) {
-    if (obj !== null && (typeof obj === "object" || typeof obj === "function")) {
-        let nodeProps = Reflect.getMetadata(nodeKey, obj.constructor)
-        nodeProps = nodeProps ?? Reflect.getMetadata(nodeKey, obj)
-        return nodeProps as (NodeProps<T> | undefined)
+    if (obj !== null && typeof obj === "object") {
+        return Reflect.getMetadata(nodeKey, obj.constructor) as (NodeProps<T> | undefined)
+    }
+    else if (obj !== null && typeof obj === "function") {
+        return Reflect.getMetadata(nodeKey, obj) as (NodeProps<T> | undefined)
     }
     else {
         return undefined
