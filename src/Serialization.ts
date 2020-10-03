@@ -50,7 +50,7 @@ function deserializeSharable(obj: any) {
     let isObj = typeof obj === "object"
 
     if (isObj && obj["__type"] === "__SharableObject") {
-        let s = new SharableObject(obj.title)
+        let s = new SharableObject(obj.label)
         Object.entries(obj.ids).forEach(
             id => s.addId(id[0], deserializeLeaf(id[1])))
         Object.entries(obj.sharables).forEach(
@@ -58,13 +58,13 @@ function deserializeSharable(obj: any) {
         return s
     }
     else if (isObj && obj["__type"] === "__SharableArray") {
-        let s = new SharableArray(obj.title)
+        let s = new SharableArray(obj.label)
         Array.from(obj.sharables).forEach(
             sharable => s.addSharable(deserializeSharable(sharable)))
         return s
     }
     else if (isObj && obj["__type"] === "__SharableScalar") {
-        let s = new SharableScalar(obj.title, deserializeLeaf(obj.value))
+        let s = new SharableScalar(obj.label, deserializeLeaf(obj.value))
         return s
     }
 

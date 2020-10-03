@@ -3,18 +3,18 @@ import "reflect-metadata"
 const classStore: Map<string, Function> = new Map()
 
 const sharableKey = Symbol("sharable_property")
-const titleKey = Symbol("sharable_id")
-const idKey = Symbol("sharable_title")
+const labelKey = Symbol("sharable_label")
+const idKey = Symbol("sharable_id")
 const nodeKey = Symbol("sharable_node")
 
 /** @internal */
 export class SharableProps {
-    constructor(title: string, forceToLeaf: boolean) {
-        this.title = title
+    constructor(label: string, forceToLeaf: boolean) {
+        this.label = label
         this.forceToLeaf = forceToLeaf
     }
 
-    readonly title: string
+    readonly label: string
     readonly forceToLeaf: boolean
 }
 
@@ -46,7 +46,6 @@ export function Node<T extends Function>(classId?: string) {
     }
 }
 
-// export, import
 export function Leaf<T extends Function>(
     classId?: string,
     serializeFn?: (o: T) => any,
@@ -59,59 +58,71 @@ export function Leaf<T extends Function>(
     }
 }
 
-export function Sharable<T>(title?: string, forceToLeaf: boolean = false) {
+export function Sharable<T extends Object>(label?: string, forceToLeaf: boolean = false) {
     return function (
         target: T,
         propertyKey: string,
     ) {
         Reflect.defineMetadata(
             sharableKey,
-            new SharableProps(title ?? propertyKey, forceToLeaf),
-            target,
+            new SharableProps(label ?? propertyKey, forceToLeaf),
+            target.constructor,
             propertyKey)
     }
 }
 
-export function Id<T>(
+export function Id<T extends Object>(
     target: T,
     propertyKey: string,
 ) {
     Reflect.defineMetadata(
         idKey,
         true,
-        target,
+        target.constructor,
         propertyKey)
 }
 
-export function Title<T>(
+export function Label<T extends Object>(
     target: T,
     propertyKey: string,
 ) {
     Reflect.defineMetadata(
-        titleKey,
+        labelKey,
         true,
-        target,
+        target.constructor,
         propertyKey)
 }
 
-/** @internal */
-export function isSharable(obj: any, propName: string) {
-    return !!Reflect.getMetadata(sharableKey, obj, propName)
+function getMetadata(key: any, obj: Function | Object, propertyKey: string) {
+    if (obj !== null && typeof obj === "object") {
+        return Reflect.getMetadata(key, obj.constructor, propertyKey)
+    }
+    else if (obj !== null && typeof obj === "function") {
+        return Reflect.getMetadata(key, obj, propertyKey)
+    }
+    else {
+        return undefined
+    }
 }
 
 /** @internal */
-export function getSharableProps(obj: any, propName: string) {
-    return Reflect.getMetadata(sharableKey, obj, propName) as SharableProps
+export function isSharable(obj: Function | Object, propName: string) {
+    return !!getMetadata(sharableKey, obj, propName)
 }
 
 /** @internal */
-export function isTitle(obj: any, propName: string) {
-    return Reflect.getMetadata(titleKey, obj, propName) ?? false
+export function getSharableProps(obj: Function | Object, propName: string) {
+    return getMetadata(sharableKey, obj, propName) as SharableProps
 }
 
 /** @internal */
-export function isId(obj: any, propName: string) {
-    return Reflect.getMetadata(idKey, obj, propName) ?? false
+export function isLabel(obj: Function | Object, propName: string) {
+    return !!getMetadata(labelKey, obj, propName)
+}
+
+/** @internal */
+export function isId(obj: Function | Object, propName: string) {
+    return !!getMetadata(idKey, obj, propName)
 }
 
 /** @internal */

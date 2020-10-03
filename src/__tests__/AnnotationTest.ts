@@ -2,7 +2,7 @@ import {
     Node, Leaf, isNodeClass, getNodeProps,
     Sharable, isSharable, getSharableProps, SharableProps,
     Id, isId,
-    Title, isTitle,
+    Label, isLabel,
     getClassById
 } from "../Annotation";
 
@@ -54,40 +54,46 @@ test('sharable', () => {
     expect(isSharable(new A2(), "a1")).toBe(false);
     expect(getSharableProps(new A2(), "a1")).toBe(undefined);
     expect(isSharable(new A2(), "a2")).toBe(true);
-    expect(getSharableProps(new A2(), "a2").title).toBe("a2");
+    expect(getSharableProps(new A2(), "a2").label).toBe("a2");
     expect(getSharableProps(new A2(), "a2").forceToLeaf).toBe(false);
     expect(isSharable(new A2(), "a3")).toBe(true);
-    expect(getSharableProps(new A2(), "a3").title).toBe("A3");
+    expect(getSharableProps(new A2(), "a3").label).toBe("A3");
     expect(getSharableProps(new A2(), "a3").forceToLeaf).toBe(false);
     expect(isSharable(new A2(), "a4")).toBe(true);
-    expect(getSharableProps(new A2(), "a4").title).toBe("A4");
+    expect(getSharableProps(new A2(), "a4").label).toBe("A4");
     expect(getSharableProps(new A2(), "a4").forceToLeaf).toBe(true);
 
     expect(isSharable(new A2(), "getA1")).toBe(false);
     expect(getSharableProps(new A2(), "getA1")).toBe(undefined);
     expect(isSharable(new A2(), "getA2")).toBe(true);
-    expect(getSharableProps(new A2(), "getA2").title).toBe("getA2");
+    expect(getSharableProps(new A2(), "getA2").label).toBe("getA2");
     expect(getSharableProps(new A2(), "getA2").forceToLeaf).toBe(false);
     expect(isSharable(new A2(), "getA3")).toBe(true);
-    expect(getSharableProps(new A2(), "getA3").title).toBe("A3");
+    expect(getSharableProps(new A2(), "getA3").label).toBe("A3");
     expect(getSharableProps(new A2(), "getA3").forceToLeaf).toBe(false);
     expect(isSharable(new A2(), "getA4")).toBe(true);
-    expect(getSharableProps(new A2(), "getA4").title).toBe("A4");
+    expect(getSharableProps(new A2(), "getA4").label).toBe("A4");
     expect(getSharableProps(new A2(), "getA4").forceToLeaf).toBe(true);
+
+    expect(isSharable(A2, "a1")).toBe(false);
+    expect(isSharable(A2, "a2")).toBe(true);
 });
 
 class A3 {
     a1 = "a1"
-    @Title
+    @Label
     a2 = "a2"
-    @Title
+    @Label
     getA3() { }
 }
 
-test('title', () => {
-    expect(isTitle(new A3(), "a1")).toBe(false);
-    expect(isTitle(new A3(), "a2")).toBe(true);
-    expect(isTitle(new A3(), "getA3")).toBe(true);
+test('label', () => {
+    expect(isLabel(new A3(), "a1")).toBe(false);
+    expect(isLabel(new A3(), "a2")).toBe(true);
+    expect(isLabel(new A3(), "getA3")).toBe(true);
+
+    expect(isLabel(A3, "a1")).toBe(false);
+    expect(isLabel(A3, "a2")).toBe(true);
 });
 
 class A4 {
@@ -102,6 +108,9 @@ test('id', () => {
     expect(isId(new A4(), "a1")).toBe(false);
     expect(isId(new A4(), "a2")).toBe(true);
     expect(isId(new A4(), "getA3")).toBe(true);
+
+    expect(isId(A4, "a1")).toBe(false);
+    expect(isId(A4, "a2")).toBe(true);
 });
 
 class A5 {
@@ -111,7 +120,7 @@ class A5 {
 
 test('missing_property', () => {
     expect(Object.assign({}, new A5())).toStrictEqual({});
-    expect(Object.assign({}, getSharableProps(new A5(), "a1"))).toStrictEqual({ "forceToLeaf": false, "title": "A1" });
+    expect(Object.assign({}, getSharableProps(new A5(), "a1"))).toStrictEqual({ "forceToLeaf": false, "label": "A1" });
 });
 
 @Node("a6")

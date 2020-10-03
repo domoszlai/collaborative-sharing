@@ -1,6 +1,6 @@
 import { Type } from "class-transformer"
 
-import { Sharable, Id, Title, Node, Leaf } from "../Annotation";
+import { Sharable, Id, Label, Node, Leaf } from "../Annotation";
 import { createPlan } from "../Plan";
 import { deserializePlan } from "../Serialization";
 
@@ -27,7 +27,7 @@ class Recipe {
     id?: string
     // when in array and no titlefn
     // or root object and leaf?
-    @Title
+    @Label
     name?: string;
     @Type(() => Ingredient)
     ingredients?: Ingredient[]

@@ -1,6 +1,6 @@
 import { serialize, classToPlain } from "class-transformer"
 
-import { Sharable, getSharableProps, Id, Title, Node, Leaf } from "../Annotation";
+import { Sharable, getSharableProps, Id, Label, Node, Leaf } from "../Annotation";
 import { createPlan } from "../Plan";
 
 @Node()
@@ -27,7 +27,7 @@ class Recipe {
     id?: string
     // when in array and no titlefn
     // or root object and leaf?
-    @Title
+    @Label
     name?: string;
     //@exclude
     ingredients?: Ingredient[]
